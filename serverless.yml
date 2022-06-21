@@ -1,0 +1,64 @@
+service: commercial-getaway-api
+useDotenv: true
+
+plugins:
+  - serverless-offline
+
+package:
+  exclude:
+    - .git/**
+    - src/**
+    - test/**
+    - e2e/**
+    - nodemon.json
+    - README.md
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  apiGateway:
+    apiKeySourceType: HEADER
+  validators:
+    all:
+      body: true
+      parameters: true
+  environment:
+    STAGE: ${env:STAGE, 'dev'}
+    LOG_LEVEL: ${env:logLevel, 'warn'}
+    AWS_ACCESS_KEY: ${env:AWS_ACCESS_KEY}
+    AWS_SECRET_ACCESS_KEY: ${env:AWS_SECRET_ACCESS_KEY}
+
+custom:
+  elasticSearch:
+    # http request level timeout
+    elasticsearchTimeoutMilliseconds: 18000
+    # retries related configuration(http request retries is disabled)
+    # minimum number of milliseconds between http request retries
+    minimumTimeoutMilliseconds: 0
+    # maximum number of milliseconds between http request retries
+    maximumTimeoutMilliseconds: 0
+    # maximum number of http request retries
+    maximumNumberOfRetries: 0
+  s3:
+    host: localhost
+    port: 3002
+    directory: localS3TempData
+    # noStart: true # Uncomment only if you already have a S3 server running locally
+
+resources:
+  Resources:
+    NewResource:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: citeline-fos-local-search-exports
+
+functions:
+  serverless:
+    handler: dist/serverless.handler
+    events:
+      - http:
+          method: ANY
+          path: /
+      - http:
+          method: ANY
+          path: '{proxy+}'

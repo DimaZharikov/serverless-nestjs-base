@@ -1,35 +1,28 @@
-import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { ExpressAdapter } from '@nestjs/platform-express';
 
-import serverlessExpress from '@vendia/serverless-express';
-import { Context, Handler, Callback } from 'aws-lambda';
+import { Context, Handler } from 'aws-lambda';
+import { createServer, proxy } from 'aws-serverless-express';
+import { eventContext } from 'aws-serverless-express/middleware';
+import express from 'express';
+import { Server } from 'http';
 
 import { AppModule } from './app.module';
 
-let server;
-
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    bodyParser: true,
-    cors: true,
-  });
-  app.useGlobalPipes(new ValidationPipe());
-  app.setGlobalPrefix('v1/api');
-  await app.init();
-
-  const expressApp = app.getHttpAdapter().getInstance();
-
-  return serverlessExpress({
-    app: expressApp,
-  });
+let cachedServer: Server;
+const binaryMimeTypes: string[] = [];
+async function bootstrapServer(): Promise<Server> {
+  if (!cachedServer) {
+    const expressApp = express();
+    const nestApp = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
+    nestApp.use(eventContext());
+    await nestApp.init();
+    cachedServer = createServer(expressApp, undefined, binaryMimeTypes);
+  }
+  return cachedServer;
 }
 
-export const handler: Handler = async <TEvent, TResults>(
-  event: TEvent,
-  context: Context,
-  callback: Callback<TResults>,
-) => {
-  server = server ?? server((await bootstrap()) as Handler);
-
-  return server(event, context, callback);
+export const handler: Handler = async <TEvent>(event: TEvent, context: Context) => {
+  cachedServer = await bootstrapServer();
+  return proxy(cachedServer, event, context, 'PROMISE').promise;
 };
