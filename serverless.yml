@@ -25,7 +25,7 @@ provider:
   environment:
     STAGE: ${env:STAGE, 'dev'}
     LOG_LEVEL: ${env:logLevel, 'warn'}
-    AWS_ACCESS_KEY: ${env:AWS_ACCESS_KEY}
+    AWS_ACCESS_KEY_ID: ${env:AWS_ACCESS_KEY}
     AWS_SECRET_ACCESS_KEY: ${env:AWS_SECRET_ACCESS_KEY}
 
 custom:
@@ -62,3 +62,14 @@ functions:
       - http:
           method: ANY
           path: '{proxy+}'
+  test:
+    handler: dist/test/index.handler
+    events:
+      - http:
+          method: get
+          path: 'test/helloworld'
+          cors: true
+      - http:
+          method: get
+          path: 'test/hello'
+          cors: true
