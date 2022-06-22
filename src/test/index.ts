@@ -25,6 +25,7 @@ async function bootstrapServer(): Promise<Server> {
 }
 
 export const handler: Handler = async <TEvent>(event: TEvent, context: Context) => {
+  console.log('handler');
   cachedServer = await bootstrapServer();
   return proxy(cachedServer, event, context, 'PROMISE').promise;
 };

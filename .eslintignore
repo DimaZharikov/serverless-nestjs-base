@@ -1,0 +1,5 @@
+**/node_modules
+**/tmp
+**/dist
+tests/**/*.json
+webpack-hmr.config.js
