@@ -7,10 +7,8 @@ plugins:
 package:
   exclude:
     - .git/**
-    - src/**
     - test/**
     - e2e/**
-    - nodemon.json
     - README.md
 
 provider:
@@ -25,7 +23,7 @@ provider:
   environment:
     STAGE: ${env:STAGE, 'dev'}
     LOG_LEVEL: ${env:logLevel, 'warn'}
-    AWS_ACCESS_KEY_ID: ${env:AWS_ACCESS_KEY}
+    AWS_ACCESS_KEY_ID: ${env:AWS_ACCESS_KEY_ID}
     AWS_SECRET_ACCESS_KEY: ${env:AWS_SECRET_ACCESS_KEY}
 
 custom:
@@ -53,23 +51,16 @@ resources:
         BucketName: citeline-fos-local-search-exports
 
 functions:
-  serverless:
-    handler: dist/main.handler
-    events:
-      - http:
-          method: ANY
-          path: /
-      - http:
-          method: ANY
-          path: '{proxy+}'
   test:
-    handler: dist/test/index.handler
+    handler: dist/first/index.handler
     events:
       - http:
-          method: get
-          path: 'test/helloworld'
+          method: post
+          path: /first/post
           cors: true
+          integration: lambda-proxy
       - http:
           method: get
-          path: 'test/hello'
+          path: first/get/{entity}/{search}/{id}
           cors: true
+          integration: lambda-proxy

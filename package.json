@@ -14,8 +14,8 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "genenv:local": "cp .env .env",
-    "start:sls": "cross-env sls offline --lambdaPort 4009 --httpPort 4002 & npm run start",
-    "start": "nest build --webpack --webpackPath webpack-hmr.config.js --watch",
+    "server": "cross-env sls offline --lambdaPort 4009 --httpPort 4002 & npm run start",
+    "start": "nest start --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
@@ -41,13 +41,9 @@
     "cross-env": "^7.0.3",
     "dotenv": "^16.0.1",
     "dotenv-cli": "^5.1.0",
-    "nodemon": "^2.0.16",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "run-script-webpack-plugin": "^0.1.0",
-    "rxjs": "^7.2.0",
-    "webpack": "^5.73.0",
-    "webpack-node-externals": "^3.0.0"
+    "rxjs": "^7.2.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",
