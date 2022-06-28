@@ -7,16 +7,18 @@
   "license": "informa INC",
   "repository": {
     "type": "git",
-    "url": "git@github.com:informa-repository/search-api.git"
+    "url": "git@github.com:commercialdevelopers/search-api.git"
   },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "genenv:local": "cp .env .env",
+    "nest:generate": "nest g resource",
     "server": "cross-env sls offline --lambdaPort 4009 --httpPort 4002 & npm run start",
-    "start": "nest start --watch",
-    "start:prod": "node dist/main",
+    "start": "cross-env STAGE=local nest start --watch",
+    "start:test": "cross-env STAGE=test nest start --watch",
+    "start:prod": "cross-env STAGE=prod node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",

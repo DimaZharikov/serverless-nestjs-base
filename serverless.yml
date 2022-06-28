@@ -21,10 +21,10 @@ provider:
       body: true
       parameters: true
   environment:
-    STAGE: ${env:STAGE, 'dev'}
+    STAGE: ${env:STAGE}
     LOG_LEVEL: ${env:logLevel, 'warn'}
     AWS_ACCESS_KEY_ID: ${env:AWS_ACCESS_KEY_ID}
-    AWS_SECRET_ACCESS_KEY: ${env:AWS_SECRET_ACCESS_KEY}
+    AWS_ACCESS_KEY: ${env:AWS_ACCESS_KEY}
 
 custom:
   elasticSearch:
@@ -51,16 +51,5 @@ resources:
         BucketName: citeline-fos-local-search-exports
 
 functions:
-  test:
-    handler: dist/first/index.handler
-    events:
-      - http:
-          method: post
-          path: /first/post
-          cors: true
-          integration: lambda-proxy
-      - http:
-          method: get
-          path: first/get/{entity}/{search}/{id}
-          cors: true
-          integration: lambda-proxy
+  event:
+    - http:
